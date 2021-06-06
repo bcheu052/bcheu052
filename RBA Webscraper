@@ -1,0 +1,45 @@
+### this script is meant to Statement of Monetary Policy from the RBA's website
+
+from datetime import datetime
+import re
+import requests
+from bs4 import BeautifulSoup
+
+### getting the relevant links from the RBA links 
+
+rba_meeting = ['https://www.rba.gov.au/publications/smp/2018/feb/overview.html',
+'https://www.rba.gov.au/publications/smp/2018/may/overview.html',
+'https://www.rba.gov.au/publications/smp/2018/aug/overview.html', 
+'https://www.rba.gov.au/publications/smp/2018/nov/overview.html', 
+'https://www.rba.gov.au/publications/smp/2019/feb/overview.html', 
+'https://www.rba.gov.au/publications/smp/2019/may/overview.html', 
+'https://www.rba.gov.au/publications/smp/2019/aug/overview.html', 
+'https://www.rba.gov.au/publications/smp/2019/nov/overview.html']
+
+### requests and converting it to a bs4 element 
+
+url = 'https://www.rba.gov.au/publications/smp/2020/nov/overview.html'
+res = requests.get(url)
+html_page = res.content
+soup = BeautifulSoup(html_page, 'html.parser')
+
+### getting all the different tags from the HMTL
+
+text = soup.find_all(text=True)
+set([t.parent.name for t in text])
+
+### creating a blacklist for tags that don't want 
+
+output = ''
+
+blacklist = [
+    '[document]','a','abbr','body','button','div','em','footer','form','h1','h2','head','header','html','label','li','nav','noscript','script','section','small','span','title', 'ul'
+    # there may be more elements you don't want, such as "style", etc. ]
+
+for t in text:
+    if t.parent.name not in blacklist:
+        output += '{} '.format(t)
+
+### remaining text is the just the text from the Statement of Monetary Poliy 
+
+print(output)
